@@ -1,0 +1,29 @@
+#include <msp430.h> 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+unsigned int adc[8];
+int Left_IR,Right_IR;
+
+void main(void)
+{
+    WDTCTL = WDTPW | WDTHOLD;   // stop watchdog time
+    ADC10CTL1 = INCH_7 + ADC10DIV_0 + CONSEQ_3 + SHS_0;
+    ADC10CTL0 = SREF_0 + ADC10SHT_2 + MSC + ADC10ON; //ADC10IE
+    ADC10AE0 =  BIT5 + BIT4 + BIT3 + BIT0;
+    ADC10DTC1 = 8;
+
+
+    while(1){
+        ADC10CTL0 &= ~ENC;
+        while (ADC10CTL1 & BUSY);
+        ADC10CTL0 |= ENC + ADC10SC;
+        ADC10SA = (unsigned int)adc;
+        Left_IR = adc[4];
+        Right_IR = adc[3];
+        __delay_cycles(100);
+    }
+
+}
+
